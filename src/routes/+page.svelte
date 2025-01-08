@@ -1,12 +1,17 @@
-<script>
+<script lang="ts">
 	import Counter from './Counter.svelte';
 	import welcome from '$lib/images/svelte-welcome.webp';
 	import welcomeFallback from '$lib/images/svelte-welcome.png';
 	import { theme } from '../stores/theme'; // Import theme store for light/dark mode
+	import { onMount } from 'svelte';
 
-	let currentTheme;
+	// Explicitly type currentTheme
+	let currentTheme: 'light' | 'dark';
+
+	// Automatically update currentTheme when theme store changes
 	$: currentTheme = $theme;
 
+	// Function to toggle between light and dark modes
 	function toggleTheme() {
 		theme.set(currentTheme === 'light' ? 'dark' : 'light');
 	}

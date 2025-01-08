@@ -1,11 +1,16 @@
 import { writable } from 'svelte/store';
 
-// Default to the user's system preference
-const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-export const theme = writable(prefersDark ? 'dark' : 'light');
+// Safely access window and localStorage
+const prefersDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+const savedTheme = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
 
-// Save the theme to localStorage
-theme.subscribe((value) => {
-    document.documentElement.setAttribute('data-theme', value);
-    localStorage.setItem('theme', value);
-});
+// Default theme based on saved value or system preference
+export const theme = writable(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+// Subscribe to changes and update document or localStorage only in the browser
+if (typeof window !== 'undefined') {
+    theme.subscribe((value) => {
+        document.documentElement.setAttribute('data-theme', value);
+        localStorage.setItem('theme', value);
+    });
+}
