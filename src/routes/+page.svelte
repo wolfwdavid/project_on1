@@ -4,6 +4,8 @@
 	import welcomeFallback from '$lib/images/svelte-welcome.png';
 	import { theme } from '../stores/theme'; // Import theme store for light/dark mode
 	import { onMount } from 'svelte';
+	import * as THREE from 'three';
+	import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 	// Explicitly type currentTheme
 	let currentTheme: 'light' | 'dark';
@@ -16,39 +18,64 @@
 		theme.set(currentTheme === 'light' ? 'dark' : 'light');
 	}
 
-	// Sample data for AI tools
-	let aiTools = [
-		'ChatGPT',
-		'MidJourney',
-		'DALL-E',
-		'Runway',
-		'Copy.ai',
-		'Jasper',
-		'Grammarly',
-		'Canva',
-		'Synthesia',
-		'DeepL',
-		'Descript',
-		'Anyword'
-	];
+	// Three.js Setup
+	let canvasContainer;
 
-	// Reactive search query and results
-	let query = '';
-	$: filteredTools = aiTools.filter(tool =>
-		tool.toLowerCase().includes(query.toLowerCase())
-	);
+	onMount(() => {
+		// Scene, Camera, Renderer
+		const scene = new THREE.Scene();
+		const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+		const renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		canvasContainer.appendChild(renderer.domElement);
 
-	// Example of highlighting search terms
-	function highlightMatch(item: string) {
-		if (!query) return item;
-		const regex = new RegExp(`(${query})`, 'gi');
-		return item.replace(regex, '<mark>$1</mark>');
-	}
+		// Sphere Geometry
+		const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+		const sphereMaterial = new THREE.MeshBasicMaterial({
+			map: new THREE.TextureLoader().load(
+				'/textures/grid-image.jpg', // Update with your texture path
+				() => console.log('Texture loaded successfully'),
+				undefined,
+				(error) => console.error('Error loading texture', error)
+			),
+		});
+		const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+		sphere.material.side = THREE.DoubleSide; // Ensure the texture is visible on the inside
+		scene.add(sphere);
+
+		// Lights (Optional)
+		const light = new THREE.AmbientLight(0xffffff);
+		scene.add(light);
+
+		// Orbit Controls
+		const controls = new OrbitControls(camera, renderer.domElement);
+
+		// Camera Position
+		camera.position.z = 10;
+
+		// Animation Loop
+		function animate() {
+			requestAnimationFrame(animate);
+
+			// Add rotation for auto movement
+			sphere.rotation.y += 0.005;
+
+			renderer.render(scene, camera);
+		}
+		animate();
+
+		// Handle Resize
+		window.addEventListener('resize', () => {
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+		});
+	});
 </script>
 
 <svelte:head>
-	<title>AI Tools Search</title>
-	<meta name="description" content="Search and explore AI tools" />
+	<title>AI Tools Search with 3D Sphere</title>
+	<meta name="description" content="Explore AI tools with a 3D interactive sphere and search functionality" />
 </svelte:head>
 
 <section>
@@ -73,26 +100,10 @@
 	<button class="theme-toggle" on:click={toggleTheme}>
 		Switch to {currentTheme === 'light' ? 'Dark' : 'Light'} Mode
 	</button>
-
-	<!-- Search Bar -->
-	<div class="search-container">
-		<input
-			type="text"
-			placeholder="Search AI tools..."
-			bind:value={query}
-			class="search-input"
-		/>
-		<ul class="search-results">
-			{#each filteredTools as tool}
-				<li>
-					{@html highlightMatch(tool)}
-				</li>
-			{:else}
-				<li>No results found</li>
-			{/each}
-		</ul>
-	</div>
 </section>
+
+<!-- Canvas container for Three.js -->
+<div bind:this={canvasContainer} class="canvas-container"></div>
 
 <style>
 	/* Section Layout */
@@ -103,111 +114,38 @@
 		align-items: center;
 		padding: 2rem;
 		text-align: center;
+		position: relative;
+		z-index: 1;
+		background-color: transparent;
 	}
 
 	h1 {
 		font-size: 2.4rem;
-		line-height: 1.2;
 		margin-bottom: 1rem;
 		color: var(--color-theme-1);
 	}
 
 	h2 {
-		margin-top: 1rem;
 		font-size: 1.2rem;
 		color: var(--color-theme-2);
 	}
 
-	/* Welcome Image Styling */
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0; /* Aspect ratio: 2048x495 */
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
-
-	/* Button Styling */
 	.theme-toggle {
 		margin-top: 2rem;
 		padding: 0.5rem 1rem;
-		font-size: 1rem;
 		background-color: var(--color-theme-1);
 		color: #fff;
 		border: none;
 		border-radius: 5px;
 		cursor: pointer;
-		transition: background-color 0.3s ease;
 	}
 
-	.theme-toggle:hover {
-		background-color: var(--color-theme-2);
-	}
-
-	/* Search Container */
-	.search-container {
-		margin-top: 2rem;
-		width: 100%;
-		max-width: 600px;
-	}
-
-	.search-input {
-		width: 100%;
-		padding: 0.5rem;
-		font-size: 1rem;
-		border: 1px solid #ccc;
-		border-radius: 5px;
-		margin-bottom: 1rem;
-	}
-
-	.search-results {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		background: var(--color-bg-1);
-		border: 1px solid #ccc;
-		border-radius: 5px;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-	}
-
-	.search-results li {
-		padding: 0.5rem;
-		font-size: 1rem;
-		border-bottom: 1px solid #eee;
-		cursor: pointer;
-		transition: background-color 0.2s ease;
-	}
-
-	.search-results li:last-child {
-		border-bottom: none;
-	}
-
-	.search-results li:hover {
-		background-color: var(--color-theme-1);
-		color: #fff;
-	}
-
-	mark {
-		background-color: var(--color-theme-2);
-		color: #000;
-		font-weight: bold;
-	}
-
-	/* Responsive Styling */
-	@media (min-width: 720px) {
-		h1 {
-			font-size: 3rem;
-		}
-		h2 {
-			font-size: 1.5rem;
-		}
+	.canvas-container {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
 	}
 </style>

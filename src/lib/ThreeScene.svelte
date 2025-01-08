@@ -12,12 +12,13 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		canvasContainer.appendChild(renderer.domElement);
 
-		// Add a Cube
-		const geometry = new THREE.BoxGeometry();
+		// Add a simple cube
+		const geometry = new THREE.BoxGeometry(1, 1, 1);
 		const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 		const cube = new THREE.Mesh(geometry, material);
 		scene.add(cube);
 
+		// Set camera position
 		camera.position.z = 5;
 
 		// Animation Loop
