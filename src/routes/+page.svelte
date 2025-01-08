@@ -15,6 +15,24 @@
 	function toggleTheme() {
 		theme.set(currentTheme === 'light' ? 'dark' : 'light');
 	}
+
+	// Sample data for search
+	let items = [
+		'Apple',
+		'Banana',
+		'Cherry',
+		'Date',
+		'Elderberry',
+		'Fig',
+		'Grape',
+		'Honeydew'
+	];
+
+	// Reactive search query and results
+	let query = '';
+	$: filteredItems = items.filter(item =>
+		item.toLowerCase().includes(query.toLowerCase())
+	);
 </script>
 
 <svelte:head>
@@ -44,6 +62,23 @@
 	<button class="theme-toggle" on:click={toggleTheme}>
 		Switch to {currentTheme === 'light' ? 'Dark' : 'Light'} Mode
 	</button>
+
+	<!-- Search Bar -->
+	<div class="search-container">
+		<input
+			type="text"
+			placeholder="Search ai..."
+			bind:value={query}
+			class="search-input"
+		/>
+		<ul class="search-results">
+			{#each filteredItems as item}
+				<li>{item}</li>
+			{:else}
+				<li>No results found</li>
+			{/each}
+		</ul>
+	</div>
 </section>
 
 <style>
@@ -103,6 +138,38 @@
 
 	.theme-toggle:hover {
 		background-color: var(--color-theme-2);
+	}
+
+	/* Search Container */
+	.search-container {
+		margin-top: 2rem;
+		width: 100%;
+		max-width: 600px;
+	}
+
+	.search-input {
+		width: 100%;
+		padding: 0.5rem;
+		font-size: 1rem;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		margin-bottom: 1rem;
+	}
+
+	.search-results {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.search-results li {
+		padding: 0.5rem;
+		font-size: 1.1rem;
+		border-bottom: 1px solid #eee;
+	}
+
+	.search-results li:last-child {
+		border-bottom: none;
 	}
 
 	/* Responsive Styling */
