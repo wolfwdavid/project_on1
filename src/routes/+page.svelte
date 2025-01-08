@@ -16,28 +16,39 @@
 		theme.set(currentTheme === 'light' ? 'dark' : 'light');
 	}
 
-	// Sample data for search
-	let items = [
-		'Apple',
-		'Banana',
-		'Cherry',
-		'Date',
-		'Elderberry',
-		'Fig',
-		'Grape',
-		'Honeydew'
+	// Sample data for AI tools
+	let aiTools = [
+		'ChatGPT',
+		'MidJourney',
+		'DALL-E',
+		'Runway',
+		'Copy.ai',
+		'Jasper',
+		'Grammarly',
+		'Canva',
+		'Synthesia',
+		'DeepL',
+		'Descript',
+		'Anyword'
 	];
 
 	// Reactive search query and results
 	let query = '';
-	$: filteredItems = items.filter(item =>
-		item.toLowerCase().includes(query.toLowerCase())
+	$: filteredTools = aiTools.filter(tool =>
+		tool.toLowerCase().includes(query.toLowerCase())
 	);
+
+	// Example of highlighting search terms
+	function highlightMatch(item: string) {
+		if (!query) return item;
+		const regex = new RegExp(`(${query})`, 'gi');
+		return item.replace(regex, '<mark>$1</mark>');
+	}
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>AI Tools Search</title>
+	<meta name="description" content="Search and explore AI tools" />
 </svelte:head>
 
 <section>
@@ -49,11 +60,11 @@
 			</picture>
 		</span>
 
-		to your new<br />SvelteKit app
+		Explore AI Tools
 	</h1>
 
 	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
+		Find the best AI tools for your needs
 	</h2>
 
 	<Counter />
@@ -67,13 +78,15 @@
 	<div class="search-container">
 		<input
 			type="text"
-			placeholder="Search ai..."
+			placeholder="Search AI tools..."
 			bind:value={query}
 			class="search-input"
 		/>
 		<ul class="search-results">
-			{#each filteredItems as item}
-				<li>{item}</li>
+			{#each filteredTools as tool}
+				<li>
+					{@html highlightMatch(tool)}
+				</li>
 			{:else}
 				<li>No results found</li>
 			{/each}
@@ -88,16 +101,15 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		flex: 0.6;
-		margin: 0 auto;
+		padding: 2rem;
 		text-align: center;
 	}
 
 	h1 {
-		width: 100%;
 		font-size: 2.4rem;
 		line-height: 1.2;
 		margin-bottom: 1rem;
+		color: var(--color-theme-1);
 	}
 
 	h2 {
@@ -160,16 +172,33 @@
 		list-style: none;
 		padding: 0;
 		margin: 0;
+		background: var(--color-bg-1);
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 	}
 
 	.search-results li {
 		padding: 0.5rem;
-		font-size: 1.1rem;
+		font-size: 1rem;
 		border-bottom: 1px solid #eee;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
 	}
 
 	.search-results li:last-child {
 		border-bottom: none;
+	}
+
+	.search-results li:hover {
+		background-color: var(--color-theme-1);
+		color: #fff;
+	}
+
+	mark {
+		background-color: var(--color-theme-2);
+		color: #000;
+		font-weight: bold;
 	}
 
 	/* Responsive Styling */
