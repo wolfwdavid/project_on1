@@ -1,19 +1,33 @@
 @import '@fontsource/fira-mono';
 
+/* Default Theme Variables (Light Mode) */
 :root {
 	--font-body: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
 		Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	--font-mono: 'Fira Mono', monospace;
+
+	/* Light Theme Colors */
 	--color-bg-0: rgb(202, 216, 228);
 	--color-bg-1: hsl(209, 36%, 86%);
 	--color-bg-2: hsl(224, 44%, 95%);
 	--color-theme-1: #ff3e00;
 	--color-theme-2: #4075a6;
 	--color-text: rgba(0, 0, 0, 0.7);
+
 	--column-width: 42rem;
 	--column-margin-top: 4rem;
 	font-family: var(--font-body);
 	color: var(--color-text);
+}
+
+/* Dark Mode Variables */
+:root[data-theme='dark'] {
+	--color-bg-0: rgb(32, 42, 54);
+	--color-bg-1: hsl(210, 20%, 20%);
+	--color-bg-2: hsl(220, 20%, 30%);
+	--color-theme-1: #ff7f50;
+	--color-theme-2: #68a0d8;
+	--color-text: rgba(255, 255, 255, 0.85);
 }
 
 body {
@@ -30,6 +44,7 @@ body {
 		linear-gradient(180deg, var(--color-bg-0) 0%, var(--color-bg-1) 15%, var(--color-bg-2) 50%);
 }
 
+/* Typography */
 h1,
 h2,
 p {
@@ -40,15 +55,6 @@ p {
 	line-height: 1.5;
 }
 
-a {
-	color: var(--color-theme-1);
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
 h1 {
 	font-size: 2rem;
 	text-align: center;
@@ -56,6 +62,15 @@ h1 {
 
 h2 {
 	font-size: 1rem;
+}
+
+a {
+	color: var(--color-theme-1);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
 }
 
 pre {
@@ -78,6 +93,7 @@ pre {
 	margin: 0 auto;
 }
 
+/* Inputs and Buttons */
 input,
 button {
 	font-size: inherit;
@@ -88,12 +104,14 @@ button:focus:not(:focus-visible) {
 	outline: none;
 }
 
+/* Media Queries */
 @media (min-width: 720px) {
 	h1 {
 		font-size: 2.4rem;
 	}
 }
 
+/* Utility Classes */
 .visually-hidden {
 	border: 0;
 	clip: rect(0 0 0 0);
